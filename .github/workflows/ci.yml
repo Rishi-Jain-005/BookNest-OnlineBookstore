@@ -1,0 +1,119 @@
+name: CI
+
+# BookNest — Team 6 — UE24CS341A
+# Runs on every push and every pull request, which is what the submission
+# guide asks CI evidence to show: "Build + automated tests run on push/PR".
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+# Cancel an in-progress run when the same branch is pushed again.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  server:
+    name: Server — lint, test, coverage
+    runs-on: ubuntu-latest
+
+    # An in-job MongoDB so integration tests have a real database
+    # and never touch the shared Atlas cluster.
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand({ping:1}).ok'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    defaults:
+      run:
+        working-directory: server
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint
+        run: npm run lint --if-present
+
+      - name: Run tests with coverage
+        env:
+          MONGO_URI: mongodb://127.0.0.1:27017/booknest_test
+          JWT_SECRET: ci-test-secret-not-a-real-key
+          NODE_ENV: test
+          # Keeps US-19 honest: the suite must pass with the gateway stubbed.
+          PAYMENT_GATEWAY_MODE: mock
+        run: npm test -- --coverage --coverageReporters=text --coverageReporters=text-summary --coverageReporters=lcov
+
+      - name: Coverage summary in the run log
+        if: always()
+        run: |
+          echo '## Server coverage' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          cat coverage/coverage-summary.json 2>/dev/null \
+            || sed -n '/Coverage summary/,$p' /dev/null \
+            || echo 'See the test step above for the coverage table.'
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-coverage
+          path: server/coverage/
+          retention-days: 30
+
+  client:
+    name: Client — lint, test, build
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: client
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint
+        run: npm run lint --if-present
+
+      - name: Run tests with coverage
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-coverage
+          path: client/coverage/
+          retention-days: 30
+
+# NOTE: this pipeline uses `npm install` so it runs before lockfiles exist.
+# After the first `npm install` in each workspace, commit package-lock.json
+# and switch both steps back to `npm ci` for reproducible builds.
