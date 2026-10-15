@@ -5,7 +5,12 @@ const mongoSanitize = require('express-mongo-sanitize');
 
 const notFound = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
+
 const healthRoutes = require('./routes/health');
+const authRoutes = require('./routes/auth');      // US-01, US-02  — Dhanush
+const bookRoutes = require('./routes/books');     // US-03, US-04  — Sahaj
+const cartRoutes = require('./routes/cart');      // US-05, US-06  — Rishi
+const adminRoutes = require('./routes/admin');    // US-07, US-08  — Lokesh
 
 function createApp() {
   const app = express();
@@ -18,13 +23,12 @@ function createApp() {
   app.use(mongoSanitize());
 
   app.use('/api/v1/health', healthRoutes);
+  app.use('/api/v1/auth', authRoutes);
+  app.use('/api/v1/books', bookRoutes);
+  app.use('/api/v1/cart', cartRoutes);
+  app.use('/api/v1/admin', adminRoutes);
 
-  // Feature routers are mounted here by their owners:
-  //   /api/v1/auth      US-01, US-02, US-16   Dhanush
-  //   /api/v1/books     US-03, US-04          Sahaj
-  //   /api/v1/cart      US-05, US-06          Rishi
-  //   /api/v1/orders    US-09 – US-12, US-17  Rishi / Dhanush
-  //   /api/v1/admin     US-07, US-08, US-13   Lokesh
+  // Sprint 2 mounts /api/v1/orders here.
 
   app.use(notFound);
   app.use(errorHandler);
