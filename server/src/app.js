@@ -10,6 +10,7 @@ const healthRoutes = require('./routes/health');
 const authRoutes = require('./routes/auth');      // US-01, US-02  — Dhanush
 const bookRoutes = require('./routes/books');     // US-03, US-04  — Sahaj
 const cartRoutes = require('./routes/cart');      // US-05, US-06  — Rishi
+const orderRoutes = require('./routes/orders');   // US-09, US-10, US-17, US-19  — Rishi
 const adminRoutes = require('./routes/admin');    // US-07, US-08  — Lokesh
 
 function createApp() {
@@ -27,8 +28,8 @@ function createApp() {
   app.use('/api/v1/books', bookRoutes);
   app.use('/api/v1/cart', cartRoutes);
   app.use('/api/v1/admin', adminRoutes);
+  app.use('/api/v1/orders', orderRoutes);
 
-  // Sprint 2 mounts /api/v1/orders here.
 
   app.use(notFound);
   app.use(errorHandler);
