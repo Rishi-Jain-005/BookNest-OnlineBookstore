@@ -1,0 +1,250 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261105195022
+Username: INBOOK_X2_SLIM\rishi
+RunAs User: INBOOK_X2_SLIM\rishi
+Configuration Name: 
+Machine: INBOOK_X2_SLIM (Microsoft Windows NT 10.0.26300.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -File .\system-tests.ps1
+Process ID: 23932
+PSVersion: 5.1.26100.9818
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9818
+BuildVersion: 10.0.26100.9818
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Logged in as customer@booknest.test (role customer)
+Books used: A='A Fine Balance'  B='A Game of Thrones'  C='Ariel'
+
+===== ST-02  Complete purchase and tracking =====
+
+--- Add 2 x A to cart -> HTTP 201
+{
+    "data":  {
+                 "id":  "6aec235f6bbdbd7fa7985622",
+                 "items":  [
+                               {
+                                   "itemId":  "6aec90a69cb66449046b819e",
+                                   "book":  {
+                                                "_id":  "6aec0d70f544ec6c7b23bb69",
+                                                "title":  "A Fine Balance",
+                                                "author":  "Rohinton Mistry",
+                                                "price":  258,
+                                                "stock_qty":  20,
+                                                "is_active":  true
+                                            },
+                                   "quantity":  2,
+                                   "unit_price":  258,
+                                   "line_total":  516
+                               }
+                           ],
+                 "total":  516
+             }
+}
+[PASS] ST-02  add to cart returns 201
+
+--- Checkout with tok_ok -> HTTP 201
+{
+    "data":  {
+                 "order_number":  "BN-20261105-FE5155B2",
+                 "customer_id":  "6aec0d70f544ec6c7b23bb9d",
+                 "items":  [
+                               {
+                                   "book_id":  "6aec0d70f544ec6c7b23bb69",
+                                   "title":  "A Fine Balance",
+                                   "quantity":  2,
+                                   "unit_price":  258
+                               }
+                           ],
+                 "total":  516,
+                 "status":  "RECEIVED",
+                 "payment_status":  "SUCCESS",
+                 "idempotency_key":  "st02-08c81fcc0f914f3a93b46c8caabccf59",
+                 "_id":  "6aec90a79cb66449046b81a6",
+                 "createdAt":  "2026-11-05T14:20:23.279Z",
+                 "updatedAt":  "2026-11-05T14:20:23.279Z",
+                 "__v":  0
+             },
+    "replayed":  false
+}
+[PASS] ST-02  checkout returns 201
+[PASS] ST-02  order status is RECEIVED
+[PASS] ST-02  order number format BN-YYYYMMDD-XXXXXXXX
+[PASS] ST-02  total equals 2 x unit price
+[PASS] ST-02  payment status is SUCCESS
+[PASS] ST-02  stock reduced by 2
+[PASS] ST-02  cart is empty after checkout
+
+--- Track order -> HTTP 200
+{
+    "data":  {
+                 "_id":  "6aec90a79cb66449046b81a6",
+                 "order_number":  "BN-20261105-FE5155B2",
+                 "customer_id":  "6aec0d70f544ec6c7b23bb9d",
+                 "items":  [
+                               {
+                                   "book_id":  "6aec0d70f544ec6c7b23bb69",
+                                   "title":  "A Fine Balance",
+                                   "quantity":  2,
+                                   "unit_price":  258
+                               }
+                           ],
+                 "total":  516,
+                 "status":  "RECEIVED",
+                 "payment_status":  "SUCCESS",
+                 "idempotency_key":  "st02-08c81fcc0f914f3a93b46c8caabccf59",
+                 "createdAt":  "2026-11-05T14:20:23.279Z",
+                 "updatedAt":  "2026-11-05T14:20:23.279Z",
+                 "__v":  0
+             }
+}
+[PASS] ST-02  order page shows RECEIVED
+
+===== ST-03  Payment failure then retry =====
+PS>TerminatingError(Invoke-WebRequest): "{"error":{"code":"PAYMENT_FAILED","message":"Payment was declined"}}"
+
+--- Checkout with tok_fail -> HTTP 402
+{
+    "error":  {
+                  "code":  "PAYMENT_FAILED",
+                  "message":  "Payment was declined"
+              }
+}
+[PASS] ST-03  declined payment returns 402
+[PASS] ST-03  stock unchanged after decline
+[PASS] ST-03  cart kept after decline
+[PASS] ST-03  no order created by the decline
+
+--- Retry with tok_ok -> HTTP 201
+{
+    "data":  {
+                 "order_number":  "BN-20261105-4DB20653",
+                 "customer_id":  "6aec0d70f544ec6c7b23bb9d",
+                 "items":  [
+                               {
+                                   "book_id":  "6aec0d70f544ec6c7b23bb88",
+                                   "title":  "A Game of Thrones",
+                                   "quantity":  1,
+                                   "unit_price":  905
+                               }
+                           ],
+                 "total":  905,
+                 "status":  "RECEIVED",
+                 "payment_status":  "SUCCESS",
+                 "idempotency_key":  "st03b-67d8c3c72ce642f29ef57a87567524f7",
+                 "_id":  "6aec90a79cb66449046b81d0",
+                 "createdAt":  "2026-11-05T14:20:23.930Z",
+                 "updatedAt":  "2026-11-05T14:20:23.930Z",
+                 "__v":  0
+             },
+    "replayed":  false
+}
+[PASS] ST-03  retry returns 201
+[PASS] ST-03  exactly one order after retry
+[PASS] ST-03  stock reduced by 1 after retry
+
+===== ST-04  Gateway outage, retry and replay with one key =====
+PS>TerminatingError(Invoke-WebRequest): "{"error":{"code":"PAYMENT_UNAVAILABLE","message":"Payment service unavailable, please retry"}}"
+
+--- Checkout during gateway outage (tok_error) -> HTTP 502
+{
+    "error":  {
+                  "code":  "PAYMENT_UNAVAILABLE",
+                  "message":  "Payment service unavailable, please retry"
+              }
+}
+[PASS] ST-04  outage returns 502
+[PASS] ST-04  stock restored after outage
+
+--- Retry with the same key (tok_ok) -> HTTP 201
+{
+    "data":  {
+                 "order_number":  "BN-20261105-5C77E6D7",
+                 "customer_id":  "6aec0d70f544ec6c7b23bb9d",
+                 "items":  [
+                               {
+                                   "book_id":  "6aec0d70f544ec6c7b23bb94",
+                                   "title":  "Ariel",
+                                   "quantity":  1,
+                                   "unit_price":  749
+                               }
+                           ],
+                 "total":  749,
+                 "status":  "RECEIVED",
+                 "payment_status":  "SUCCESS",
+                 "idempotency_key":  "st04-76038a357f4041f3aca21e935b94e533",
+                 "_id":  "6aec90a89cb66449046b81f2",
+                 "createdAt":  "2026-11-05T14:20:24.217Z",
+                 "updatedAt":  "2026-11-05T14:20:24.217Z",
+                 "__v":  0
+             },
+    "replayed":  false
+}
+[PASS] ST-04  retry returns 201
+
+--- Repeat the same request again (replay) -> HTTP 200
+{
+    "data":  {
+                 "_id":  "6aec90a89cb66449046b81f2",
+                 "order_number":  "BN-20261105-5C77E6D7",
+                 "customer_id":  "6aec0d70f544ec6c7b23bb9d",
+                 "items":  [
+                               {
+                                   "book_id":  "6aec0d70f544ec6c7b23bb94",
+                                   "title":  "Ariel",
+                                   "quantity":  1,
+                                   "unit_price":  749
+                               }
+                           ],
+                 "total":  749,
+                 "status":  "RECEIVED",
+                 "payment_status":  "SUCCESS",
+                 "idempotency_key":  "st04-76038a357f4041f3aca21e935b94e533",
+                 "createdAt":  "2026-11-05T14:20:24.217Z",
+                 "updatedAt":  "2026-11-05T14:20:24.217Z",
+                 "__v":  0
+             },
+    "replayed":  true
+}
+[PASS] ST-04  replay returns 200 with replayed=true
+[PASS] ST-04  replay returns the same order
+[PASS] ST-04  exactly one new order in total
+[PASS] ST-04  stock reduced by exactly 1
+
+===== SUMMARY =====
+
+Test  Check                                    Result
+----  -----                                    ------
+ST-02 add to cart returns 201                  PASS
+ST-02 checkout returns 201                     PASS
+ST-02 order status is RECEIVED                 PASS
+ST-02 order number format BN-YYYYMMDD-XXXXXXXX PASS
+ST-02 total equals 2 x unit price              PASS
+ST-02 payment status is SUCCESS                PASS
+ST-02 stock reduced by 2                       PASS
+ST-02 cart is empty after checkout             PASS
+ST-02 order page shows RECEIVED                PASS
+ST-03 declined payment returns 402             PASS
+ST-03 stock unchanged after decline            PASS
+ST-03 cart kept after decline                  PASS
+ST-03 no order created by the decline          PASS
+ST-03 retry returns 201                        PASS
+ST-03 exactly one order after retry            PASS
+ST-03 stock reduced by 1 after retry           PASS
+ST-04 outage returns 502                       PASS
+ST-04 stock restored after outage              PASS
+ST-04 retry returns 201                        PASS
+ST-04 replay returns 200 with replayed=true    PASS
+ST-04 replay returns the same order            PASS
+ST-04 exactly one new order in total           PASS
+ST-04 stock reduced by exactly 1               PASS
+
+
+Passed: 23   Failed: 0
+**********************
+Windows PowerShell transcript end
+End time: 20261105195024
+**********************
