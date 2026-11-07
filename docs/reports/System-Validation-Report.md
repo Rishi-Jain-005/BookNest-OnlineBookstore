@@ -1,14 +1,14 @@
 # System Validation Report
 
 **Project:** BookNest Online Bookstore  
-**Branch / commit:** `main` @ `d420f77`  
+**Branch / commit:** `main` @ `3174f3e`  
 **Run date:** 5 November 2026 (scripted system runs); 7 November 2026 (Jest)  
 **Tool:** Jest (`--runInBand --coverage`), MongoDB in Docker for integration tests
 
 ## 1. Scope and method
 
 System validation was done in two ways:
-1. **Automated integration tests** (86 tests in 7 suites, run against a real MongoDB through the Express app). Results are in section 3.
+1. **Automated integration tests** (95 tests in 8 suites, run against a real MongoDB through the Express app). Results are in section 3.
 2. **Scripted API runs** (`docs/system-tests/system-tests.ps1`) for the three end-to-end flows ST-02, ST-03 and ST-04, run against the live API on `localhost:5000` with the seeded customer. Results are in section 2.
 
 **Limitations (stated honestly):**
@@ -50,7 +50,7 @@ Run result: **23 checks, 23 passed, 0 failed.** Transcript: `docs/system-tests/s
 
 ## 3. Automated integration tests
 
-Result: **86 tests, 86 passed, 0 failed.**
+Result: **95 tests, 95 passed, 0 failed.**
 
 | Suite | Tests | Passed | Failed | Time |
 |---|---|---|---|---|
@@ -61,6 +61,7 @@ Result: **86 tests, 86 passed, 0 failed.**
 | `tests/integration/auth.test.js` | 14 | 14 | 0 | 4.1 s |
 | `tests/integration/books.test.js` | 15 | 15 | 0 | 2.7 s |
 | `tests/integration/gaps.test.js` | 6 | 6 | 0 | - |
+| `tests/integration/profile.test.js` | 9 | 9 | 0 | 5.5 s |
 
 | File | ID | Test | Duration | Result |
 |---|---|---|---|---|
@@ -150,6 +151,15 @@ Result: **86 tests, 86 passed, 0 failed.**
 | `gaps.test.js` | TC-ADM-03 | Gap-closing tests admin edits a price and customers see the new price | 164 ms | PASS |
 | `gaps.test.js` | TC-ADM-05 | Gap-closing tests stock cannot be set below zero | 128 ms | PASS |
 | `gaps.test.js` | TC-ADM-07 | Gap-closing tests a disabled book can be re-enabled | 140 ms | PASS |
+| `profile.test.js` | FR-016 | updates the name | 317 ms | PASS |
+| `profile.test.js` | FR-016 | refuses to change the email (SRS FR-016) and leaves it unchanged | 172 ms | PASS |
+| `profile.test.js` | FR-016 | refuses to change the role | 159 ms | PASS |
+| `profile.test.js` | FR-016 | refuses an empty name | 141 ms | PASS |
+| `profile.test.js` | FR-016 | requires authentication | 134 ms | PASS |
+| `profile.test.js` | FR-016 | changes the password; the old one stops working and the new one logs in | 631 ms | PASS |
+| `profile.test.js` | FR-016 | refuses a wrong current password and logs a security event | 252 ms | PASS |
+| `profile.test.js` | FR-016 | refuses a new password shorter than 8 characters | 134 ms | PASS |
+| `profile.test.js` | FR-016 | SEC-06: a failed login writes a LOGIN_FAILED security event without the password | 268 ms | PASS |
 
 ## 4. Security tests covered by the integration suites
 
@@ -178,4 +188,4 @@ The Test Plan exit criterion asks for 100% of cases executed. That was not achie
 These are recorded as deviations in `DEVIATIONS.md`.
 
 ## 6. Conclusion
-All executed tests passed: 103/103 automated tests and 23/23 scripted system checks. The system validation is complete for the executed scope and incomplete against the full Test Plan, for the reasons in section 5.
+All executed tests passed: 112/112 automated tests and 23/23 scripted system checks. The system validation is complete for the executed scope and incomplete against the full Test Plan, for the reasons in section 5.

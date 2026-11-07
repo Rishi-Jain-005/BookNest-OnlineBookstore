@@ -66,7 +66,6 @@ services. Does not change the test levels described in the Test Plan.
 |---|---|---|---|
 | FR-013 sales summary and low-stock report | Medium | Not built | RPT-01..08 and ST-08 cannot run |
 | FR-014 admin order status update | High | Not built (only the status list exists in Order.js) | OPS-01..08, TRK-05 and ST-06 cannot run |
-| FR-016 profile update and password change | Low | Only GET /api/v1/auth/me exists | AUTH-10..17 cannot run |
 
 The Test Plan exit criteria "100% of cases executed" and "100% of High-priority cases passed" are therefore not met.
 
@@ -77,11 +76,13 @@ The Test Plan exit criteria "100% of cases executed" and "100% of High-priority 
 | Stock vs payment order | Decrement after payment success (BR-06, ADR-08) | Atomic conditional decrement before the gateway call; released on decline (402) or outage (502) | Same guarantee (stock never negative, SAF-002) without a MongoDB transaction on a non-replica-set test database. A failed payment leaves stock unchanged (IT-ORD-03, IT-ORD-10) |
 | Refund (SAF-001) | Refund if payment succeeds but the order cannot be created | No refund call. Stock is released and the error returned. The last-copy race is refused with 409 before payment is taken | Mock gateway only. Known gap: if saving the order fails after approval, the charge is not reversed |
 | Login rate limit (SEC-007) | 5 failures per account and IP in 15 min | Per IP, [5 or 10] per 15 min | express-rate-limit default key |
-| Security logging (SEC-006) | Failed login, 401/403, invalid token logged | Implemented in code; no automated test checks the log entries | Not tested in this release |
+| Security logging (SEC-006) | Failed login, 401/403, invalid token logged | Implemented; LOGIN_FAILED and PASSWORD_CHANGE_FAILED events asserted in profile.test.js (securityLog is mocked, so the test checks the call, not console output) | 401/403 and invalid-token events are not asserted by any test |
 | Gateway outage | 504, retry with same key (tok_timeout) | 502 (tok_error); retry verified by ST-04 | Mock gateway design |
+| Admin stock and disable | PATCH /books/:id/stock (delta) and PATCH /books/:id/active | PATCH /books/:id with absolute stock_qty or is_active; DELETE /books/:id disables | Simpler admin API; covered by admin.test.js and gaps.test.js (ADM-03, 05, 07) |
 | API base path | /api | /api/v1 | Versioned prefix |
 | Order number | BN-YYYYMMDD-nnnn | BN-YYYYMMDD-XXXXXXXX (random hex) | No counter collection; unique index retained |
 | TC IDs | STP TC-xxx | Jest uses IT-/UT-/ST-SEC- IDs; mapping in the Test Case Document §3 | Naming grew during development |
+| Profile update (FR-016) | Customer can update name and password; email and role cannot be changed | Implemented as specified: PUT /api/v1/auth/me (name only) and PUT /api/v1/auth/me/password (current password required) | API only: the client has no profile screen. The security-log test in profile.test.js is titled "SEC-06"; that is a test title, not the STP case TC-SEC-06 |
 
 
 ## Deployment

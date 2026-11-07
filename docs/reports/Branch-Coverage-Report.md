@@ -1,7 +1,7 @@
 # Branch Coverage Report
 
 **Project:** BookNest Online Bookstore  
-**Branch / commit:** `main` @ `d420f77`  
+**Branch / commit:** `main` @ `3174f3e`  
 **Run date:** 7 November 2026  
 **Tool:** Jest (`--runInBand --coverage`), MongoDB in Docker for integration tests
 
@@ -9,7 +9,7 @@
 
 | Metric | Covered / Total | Coverage | Target (STP) | Result |
 |---|---|---|---|---|
-| Branches | 176/203 | **86.69%** | 70% | **MET** |
+| Branches | 189/219 | **86.30%** | 70% | **MET** |
 
 ## 2. Per-file branch coverage (files that contain branches)
 
@@ -20,9 +20,9 @@
 | `src/middleware/errorHandler.js` | 6/12 | 50.00% | **Below** |
 | `src/services/orderService.js` | 14/19 | 73.68% | Met |
 | `src/middleware/auth.js` | 10/12 | 83.33% | Met |
+| `src/routes/auth.js` | 20/24 | 83.33% | Met |
 | `src/routes/cart.js` | 27/32 | 84.37% | Met |
 | `src/routes/admin.js` | 21/24 | 87.50% | Met |
-| `src/routes/auth.js` | 7/8 | 87.50% | Met |
 | `src/routes/orders.js` | 26/27 | 96.29% | Met |
 | `src/middleware/validate.js` | 24/24 | 100.00% | Met |
 | `src/routes/books.js` | 26/26 | 100.00% | Met |
@@ -40,9 +40,9 @@ Files with no branches (models, `app.js`, `notFound.js`, `health.js`) are omitte
 | `src/services/securityLog.js` | 33.33% (1/3) | the default-argument branch and the `if` at line 6 were never taken |
 | `src/middleware/errorHandler.js` | 50.00% (6/12) | several fallback and conditional branches (lines 7-11) were never taken; the error paths exercised so far all go through the same route |
 
-These three files hold 10 of the 27 uncovered branches in the project. `src/services/orderService.js` is also the lowest of the business-logic files at 73.68% (14/19), but is above target.
+These three files hold 10 of the 30 uncovered branches in the project. `src/services/orderService.js` is also the lowest of the business-logic files at 73.68% (14/19), but is above target.
 
 ## 4. Observations
-- The project-wide branch coverage is 86.69%, which is above the 70% STP target. The per-file figures show that the shortfall is confined to infrastructure code (error handler, security log, database connector), not to the cart, catalog, checkout or auth logic.
+- The project-wide branch coverage is 86.30%, which is above the 70% STP target. The per-file figures show that the shortfall is confined to infrastructure code (error handler, security log, database connector), not to the cart, catalog, checkout or auth logic.
 - Business-logic branches are well covered: `validate.js` 100%, `books.js` 100%, `cartService.js` 100%, `paymentGateway.js` 100%, `orders.js` 96.29%.
 - Recommended follow-up (if time allows): add tests for `errorHandler.js` that trigger non-500 statuses and the production-mode response, and a test for `securityLog` when a write fails.

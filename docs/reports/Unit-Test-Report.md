@@ -1,7 +1,7 @@
 # Unit Test Report
 
 **Project:** BookNest Online Bookstore  
-**Branch / commit:** `main` @ `d420f77`  
+**Branch / commit:** `main` @ `3174f3e`  
 **Run date:** 7 November 2026  
 **Tool:** Jest (`--runInBand --coverage`), MongoDB in Docker for integration tests
 
@@ -15,7 +15,7 @@
 | Failed | 0 |
 | Overall result | **PASS** |
 
-Unit tests run without a database. For context, the full run on `main` was 103 tests in 10 suites, 103 passed and 0 failed; the 86 integration tests are in the System Validation Report.
+Unit tests run without a database. For context, the full run on `main` was 112 tests in 11 suites, 112 passed and 0 failed; the 95 integration tests are in the System Validation Report.
 
 ## 2. Suites
 

@@ -1,7 +1,7 @@
 # Code Coverage Report
 
 **Project:** BookNest Online Bookstore  
-**Branch / commit:** `main` @ `d420f77`  
+**Branch / commit:** `main` @ `3174f3e`  
 **Run date:** 7 November 2026  
 **Tool:** Jest (`--runInBand --coverage`), MongoDB in Docker for integration tests
 
@@ -9,12 +9,12 @@
 
 | Metric | Covered / Total | Coverage |
 |---|---|---|
-| Statements | 397/440 | **90.22%** |
-| Lines | 367/397 | **92.44%** |
-| Functions | 55/61 | **90.16%** |
-| Branches | 176/203 | **86.69%** |
+| Statements | 417/462 | **90.25%** |
+| Lines | 387/419 | **92.36%** |
+| Functions | 57/63 | **90.47%** |
+| Branches | 189/219 | **86.30%** |
 
-Scope: all files under `server/src`. All 103 tests (unit and integration) contribute to these figures.
+Scope: all files under `server/src`. All 112 tests (unit and integration) contribute to these figures.
 
 ## 2. Per-file coverage
 
@@ -54,7 +54,7 @@ Scope: all files under `server/src`. All 103 tests (unit and integration) contri
 | `src/services/paymentGateway.js` | 88.88% | 66.66% | `catch`/timeout path of the mock gateway not triggered |
 
 ## 4. Observations
-- Line coverage of 92.44% is above the 70% target in the Test Plan.
+- Line coverage of 92.36% is above the 70% target in the Test Plan.
 - `config/db.js` is the only file at 0%: `connectDb` is not called during the test run.
 - The remaining gaps are mostly `catch` blocks and a few callbacks that the tests never trigger (for example in `admin.js`, `books.js` and `paymentGateway.js`).
 - The HTML report from the same run is in `server/coverage/index.html`.

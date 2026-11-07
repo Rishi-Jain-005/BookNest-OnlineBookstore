@@ -1,6 +1,6 @@
 # BookNest – Test Case Document (updated after Sprints 1–3)
 
-**Team 6 · UE24CS341A · Based on STP v1.0 §13.3 · Execution: Jest run of 7 Nov 2026 (`server/jest-results.json`: 103 tests, 103 passed, 0 failed)**
+**Team 6 · UE24CS341A · Based on STP v1.0 §13.3 · Execution: Jest run of 7 Nov 2026 (`server/jest-results.json`: 112 tests, 112 passed, 0 failed)**
 
 **Result key:** **Pass** = executed and passed · **Partial** = executed, but some steps/data of the STP case were not exercised · **Not built (deferred)** = feature not implemented (see DEVIATIONS.md) · **Not executed** = no automated or manual evidence yet (not counted as Pass).
 
@@ -9,8 +9,8 @@
 | Result | Count | % of 99 |
 |---|---|---|
 | Pass | 46 | 46.5% |
-| Partial | 11 | 11.1% |
-| Not built (deferred) | 27 | 27.3% |
+| Partial | 19 | 19.2% |
+| Not built (deferred) | 19 | 19.2% |
 | Not executed | 15 | 15.2% |
 | Failed | 0 | 0% |
 
@@ -18,7 +18,7 @@
 
 | Module | Cases | Pass | Partial | Not built | Not executed |
 |---|---|---|---|---|---|
-| Auth (AUTH-01-17) | 17 | 5 | 2 | 8 | 2 |
+| Auth (AUTH-01-17) | 17 | 5 | 10 | 0 | 2 |
 | Catalog (CAT) | 9 | 7 | 1 | 0 | 1 |
 | Cart (CART) | 8 | 6 | 2 | 0 | 0 |
 | Order (ORD) | 11 | 10 | 1 | 0 | 0 |
@@ -29,9 +29,9 @@
 | Security (SEC) | 8 | 2 | 1 | 0 | 5 |
 | Non-functional (PERF/AVL/USE/MNT/SAF) | 5 | 0 | 1 | 0 | 4 |
 | System (ST-01-08) | 8 | 0 | 3 | 2 | 3 |
-| **Total** | **99** | **46** | **11** | **27** | **15** |
+| **Total** | **99** | **46** | **19** | **19** | **15** |
 
-Code coverage (server, Jest): lines 92.44% (367/397), statements 90.22%, functions 90.16%, **branches 86.69% (176/203)**. Targets in STP §5: services lines ≥ 80%, branches ≥ 70% – met.
+Code coverage (server, Jest): lines 92.36% (387/419), statements 90.25%, functions 90.47%, **branches 86.30% (189/219)**. Targets in STP §5: services lines ≥ 80%, branches ≥ 70% – met.
 
 ## 2. Changes from STP v1.0 (test cases updated during the sprints)
 
@@ -58,12 +58,12 @@ Evidence = test name in `jest-results.json`. UT = unit, IT = integration.
 | AUTH-02 | FR-001 | "rejects a duplicate email with 409" | Pass | |
 | AUTH-03 | FR-001, SEC-003 | malformed email 400; password < 8 → 400 | Partial | empty name and 1000-char name not tested |
 | AUTH-04 | FR-002 | "returns a signed JWT for correct credentials" | Pass | |
-| AUTH-05 | FR-002, SEC-006 | wrong password 401; same error for unknown email | Partial | logging built, no test (securitylogs entry not verified) |
+| AUTH-05 | FR-002, SEC-006 | wrong password 401; same error for unknown email; LOGIN_FAILED call asserted on a mocked logger (profile.test.js) | Partial | stored log entry not verified; 401/403 and invalid-token events not asserted |
 | AUTH-06 | SEC-001 | "SEC-001: stores a bcrypt hash, never the plaintext password" | Pass | |
 | AUTH-07 | SEC-004 | no token / tampered / expired tokens rejected | Pass | |
 | AUTH-08 | SEC-004 | – | Not executed | secret scan evidence needed |
 | AUTH-09 | SEC-007 | – | Not executed | rate limiting not tested |
-| AUTH-10 to AUTH-17 | FR-016 | - | Not built (deferred) | only GET /auth/me exists; profile update and password change not implemented (8 cases) |
+| AUTH-10 to AUTH-17 | FR-016 | profile.test.js (PR #34, #35): name update; email refused; role refused; empty name refused; auth required 401; password change; wrong current password 400; short password 400 | Partial | STP lists these 8 cases only in the traceability matrix, so they are mapped by requirement (name and password only, per SRS). API level only, no profile screen |
 
 ### Catalog (UC-02)
 
@@ -146,7 +146,7 @@ Evidence = test name in `jest-results.json`. UT = unit, IT = integration.
 
 | TC | Result | Note |
 |---|---|---|
-| MNT-01 | Partial | coverage met (lines 92.44%, branches 86.69%); layering review/SonarQube gate not evidenced |
+| MNT-01 | Partial | coverage met (lines 92.36%, branches 86.30%); layering review/SonarQube gate not evidenced |
 | PERF-01, AVL-01, USE-01, SAF-01 | Not executed | need staging |
 | ST-02, ST-03, ST-04 | Partial | API-level run, 23/23 checks (st-run.txt); UI steps not exercised, no checkout screens |
 | ST-06, ST-08 | Not built (deferred) | FR-014 and FR-013 not implemented |
@@ -157,4 +157,4 @@ No failed tests in this run. Defect log: GitHub Issues (none opened from this ru
 
 ## 5. Open stories affecting results
 - **US-14 (#20) input validation:** implemented; operator-injection acceptance criterion has no test → add one (also closes CAT-08/SEC-05 gaps).
-- **US-16 (#22) security event logging:** built (logSecurityEvent), no test evidence; affects AUTH-05, SEC-02.
+- **US-16 (#22) security event logging:** delivered in PR #34; LOGIN_FAILED and PASSWORD_CHANGE_FAILED calls asserted on a mocked logger; 401/403 and invalid-token events not asserted; affects AUTH-05, SEC-02.
