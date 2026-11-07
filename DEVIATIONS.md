@@ -83,3 +83,7 @@ The Test Plan exit criteria "100% of cases executed" and "100% of High-priority 
 | Order number | BN-YYYYMMDD-nnnn | BN-YYYYMMDD-XXXXXXXX (random hex) | No counter collection; unique index retained |
 | TC IDs | STP TC-xxx | Jest uses IT-/UT-/ST-SEC- IDs; mapping in the Test Case Document §3 | Naming grew during development |
 
+
+## Deployment
+The server Dockerfile builds locally (docker build succeeds). The application was not deployed to a cloud host or staging, and CI has no Docker build step. TC-PERF-01, TC-AVL-01, TC-SEC-06 (TLS) and TC-SEC-08 (ZAP) need a deployed environment, so they were not run.
+
