@@ -2,7 +2,7 @@
 
 **Project:** BookNest Online Bookstore  
 **Branch / commit:** `main` @ `b6086ab`  
-**Run date:** 5 November 2026  
+**Run date:** 7 November 2026  
 **Tool:** Jest (`--runInBand --coverage`), MongoDB in Docker for integration tests
 
 ## 1. Overall

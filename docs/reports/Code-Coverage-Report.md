@@ -2,7 +2,7 @@
 
 **Project:** BookNest Online Bookstore  
 **Branch / commit:** `main` @ `b6086ab`  
-**Run date:** 5 November 2026  
+**Run date:** 7 November 2026  
 **Tool:** Jest (`--runInBand --coverage`), MongoDB in Docker for integration tests
 
 ## 1. Overall coverage
@@ -14,7 +14,7 @@
 | Functions | 55/61 | **90.16%** |
 | Branches | 176/203 | **86.69%** |
 
-Scope: all files under `server/src`. All 97 tests (unit and integration) contribute to these figures.
+Scope: all files under `server/src`. All 103 tests (unit and integration) contribute to these figures.
 
 ## 2. Per-file coverage
 

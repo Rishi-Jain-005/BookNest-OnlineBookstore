@@ -2,13 +2,13 @@
 
 **Project:** BookNest Online Bookstore  
 **Branch / commit:** `main` @ `b6086ab`  
-**Run date:** 5 November 2026  
+**Run date:** 5 November 2026 (scripted system runs); 7 November 2026 (Jest)  
 **Tool:** Jest (`--runInBand --coverage`), MongoDB in Docker for integration tests
 
 ## 1. Scope and method
 
 System validation was done in two ways:
-1. **Automated integration tests** (80 tests in 6 suites, run against a real MongoDB through the Express app). Results are in section 3.
+1. **Automated integration tests** (86 tests in 7 suites, run against a real MongoDB through the Express app). Results are in section 3.
 2. **Scripted API runs** (`docs/system-tests/system-tests.ps1`) for the three end-to-end flows ST-02, ST-03 and ST-04, run against the live API on `localhost:5000` with the seeded customer. Results are in section 2.
 
 **Limitations (stated honestly):**
@@ -18,7 +18,9 @@ System validation was done in two ways:
 
 ## 2. System test runs (live API)
 
-Run result: **23 checks, 23 passed, 0 failed.** Transcript: `docs/system-tests/st-run.txt`. Attach the screenshot of the summary table here as evidence.
+Run result: **23 checks, 23 passed, 0 failed.** Transcript: `docs/system-tests/st-run.txt`. Screenshot of the run summary:
+
+![System test run summary](system-tests/st-summary.png)
 
 | Test | Check | Result |
 |---|---|---|
@@ -48,7 +50,7 @@ Run result: **23 checks, 23 passed, 0 failed.** Transcript: `docs/system-tests/s
 
 ## 3. Automated integration tests
 
-Result: **80 tests, 80 passed, 0 failed.**
+Result: **86 tests, 86 passed, 0 failed.**
 
 | Suite | Tests | Passed | Failed | Time |
 |---|---|---|---|---|
@@ -58,6 +60,7 @@ Result: **80 tests, 80 passed, 0 failed.**
 | `tests/integration/orders.test.js` | 12 | 12 | 0 | 5.3 s |
 | `tests/integration/auth.test.js` | 14 | 14 | 0 | 4.1 s |
 | `tests/integration/books.test.js` | 15 | 15 | 0 | 2.7 s |
+| `tests/integration/gaps.test.js` | 6 | 6 | 0 | - |
 
 | File | ID | Test | Duration | Result |
 |---|---|---|---|---|
@@ -141,6 +144,12 @@ Result: **80 tests, 80 passed, 0 failed.**
 | `books.test.js` | - | Catalog GET /api/v1/books/:id returns one book | 17 ms | PASS |
 | `books.test.js` | - | Catalog GET /api/v1/books/:id 404s on an unknown id | 15 ms | PASS |
 | `books.test.js` | - | Catalog GET /api/v1/books/:id 404s on a malformed id instead of throwing a 500 | 18 ms | PASS |
+| `gaps.test.js` | TC-CAT-03 | Gap-closing tests filters by genre, case-insensitively | 284 ms | PASS |
+| `gaps.test.js` | TC-CAT-08 | Gap-closing tests operator objects in query are not executed and do not leak data | 145 ms | PASS |
+| `gaps.test.js` | TC-SEC-05 | Gap-closing tests operator injection in login is refused | 170 ms | PASS |
+| `gaps.test.js` | TC-ADM-03 | Gap-closing tests admin edits a price and customers see the new price | 164 ms | PASS |
+| `gaps.test.js` | TC-ADM-05 | Gap-closing tests stock cannot be set below zero | 128 ms | PASS |
+| `gaps.test.js` | TC-ADM-07 | Gap-closing tests a disabled book can be re-enabled | 140 ms | PASS |
 
 ## 4. Security tests covered by the integration suites
 
@@ -150,6 +159,7 @@ Result: **80 tests, 80 passed, 0 failed.**
 | ST-SEC-04 cart requires authentication | `cart.test.js` | PASS |
 | ST-SEC-05..08 role-based access (customer gets 403, anonymous 401, admin allowed) | `admin.test.js` | PASS |
 | TC-SEC-04 / SEC-005 no card data stored | `orderStp.test.js`, IT-ORD-09 | PASS |
+| TC-SEC-05 login operator injection | `gaps.test.js` | PASS |
 
 ## 5. Not executed
 
@@ -168,4 +178,4 @@ The Test Plan exit criterion asks for 100% of cases executed. That was not achie
 These are recorded as deviations in `DEVIATIONS.md`.
 
 ## 6. Conclusion
-All executed tests passed: 97/97 automated tests and 23/23 scripted system checks. The system validation is complete for the executed scope and incomplete against the full Test Plan, for the reasons in section 5.
+All executed tests passed: 103/103 automated tests and 23/23 scripted system checks. The system validation is complete for the executed scope and incomplete against the full Test Plan, for the reasons in section 5.

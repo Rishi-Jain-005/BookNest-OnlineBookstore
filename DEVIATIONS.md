@@ -58,20 +58,28 @@ services. Does not change the test levels described in the Test Plan.
 | Stock decrement | One MongoDB transaction | Atomic conditional update per book, undone if any line fails | Local test database is not a replica set; the same guarantee that stock never goes negative (SAF-002) |
 | Idempotency key | Stored on the Payment | Stored on the Order | Replay returns the original order directly |
 | Sprints | Six | Two, plus Sprint 3 for spillover and testing | Per the Part 2 and Part 3 briefs |
-## Part 3 testing deviations
-- Test Plan exit criterion "100% of cases executed" was not met. Not executed: TC-PERF-01 (load test), TC-AVL-01 (availability), TC-USE-01 (usability), TC-SAF-01 (backup/restore), TC-SEC-08 (OWASP ZAP scan).
-- System tests ST-02, ST-03 and ST-04 were run at API level (scripts in docs/system-tests). The client has no checkout screens, so the UI steps were not executed.
-- The mock gateway uses the token tok_error for an outage. The STP names it tok_timeout.
-- The API base path is /api/v1. SAD 4.3 specifies /api.
-- Order numbers are BN-YYYYMMDD-XXXXXXXX (8 characters). SRS Appendix B specifies nnnn.
-- Automated tests use IT-/UT-/ST-SEC- IDs. The mapping to the STP's TC IDs is in the System Validation Report.
-- Deferred to a later release: <list the stories your team agreed not to finish>
 
-## Part 3 testing deviations
-- Test Plan exit criterion "100% of cases executed" was not met. Not executed: TC-PERF-01, TC-AVL-01, TC-USE-01, TC-SAF-01, TC-SEC-08 (ZAP scan).
-- System tests ST-02, ST-03 and ST-04 were run at API level. The client has no checkout screens, so the UI steps were not executed.
-- The mock gateway uses tok_error for an outage. The STP names it tok_timeout.
-- The API base path is /api/v1. SAD 4.3 specifies /api.
-- Order numbers are BN-YYYYMMDD-XXXXXXXX. SRS Appendix B specifies nnnn.
-- Automated tests use IT-/UT-/ST-SEC- IDs. The mapping to the STP's TC IDs is in the System Validation Report.
-- Deferred to a later release: sales summary report, low-stock report (only the low_stock_threshold field exists), plus any other stories the team agrees not to finish.
+
+## Part 3: features not built (deferred)
+
+| Requirement | Priority | Status | Effect on testing |
+|---|---|---|---|
+| FR-013 sales summary and low-stock report | Medium | Not built | RPT-01..08 and ST-08 cannot run |
+| FR-014 admin order status update | High | Not built (only the status list exists in Order.js) | OPS-01..08, TRK-05 and ST-06 cannot run |
+| FR-016 profile update and password change | Low | Only GET /api/v1/auth/me exists | AUTH-10..17 cannot run |
+
+The Test Plan exit criteria "100% of cases executed" and "100% of High-priority cases passed" are therefore not met.
+
+## Part 3: implementation differs from SAD/SRS
+
+| Area | Submitted | Implemented | Reason |
+|---|---|---|---|
+| Stock vs payment order | Decrement after payment success (BR-06, ADR-08) | Atomic conditional decrement before the gateway call; released on decline (402) or outage (502) | Same guarantee (stock never negative, SAF-002) without a MongoDB transaction on a non-replica-set test database. A failed payment leaves stock unchanged (IT-ORD-03, IT-ORD-10) |
+| Refund (SAF-001) | Refund if payment succeeds but the order cannot be created | No refund call. Stock is released and the error returned. The last-copy race is refused with 409 before payment is taken | Mock gateway only. Known gap: if saving the order fails after approval, the charge is not reversed |
+| Login rate limit (SEC-007) | 5 failures per account and IP in 15 min | Per IP, [5 or 10] per 15 min | express-rate-limit default key |
+| Security logging (SEC-006) | Failed login, 401/403, invalid token logged | Implemented in code; no automated test checks the log entries | Not tested in this release |
+| Gateway outage | 504, retry with same key (tok_timeout) | 502 (tok_error); retry verified by ST-04 | Mock gateway design |
+| API base path | /api | /api/v1 | Versioned prefix |
+| Order number | BN-YYYYMMDD-nnnn | BN-YYYYMMDD-XXXXXXXX (random hex) | No counter collection; unique index retained |
+| TC IDs | STP TC-xxx | Jest uses IT-/UT-/ST-SEC- IDs; mapping in the Test Case Document §3 | Naming grew during development |
+
