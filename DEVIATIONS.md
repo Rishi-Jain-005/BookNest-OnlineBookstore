@@ -75,7 +75,7 @@ The Test Plan exit criteria "100% of cases executed" and "100% of High-priority 
 |---|---|---|---|
 | Stock vs payment order | Decrement after payment success (BR-06, ADR-08) | Atomic conditional decrement before the gateway call; released on decline (402) or outage (502) | Same guarantee (stock never negative, SAF-002) without a MongoDB transaction on a non-replica-set test database. A failed payment leaves stock unchanged (IT-ORD-03, IT-ORD-10) |
 | Refund (SAF-001) | Refund if payment succeeds but the order cannot be created | No refund call. Stock is released and the error returned. The last-copy race is refused with 409 before payment is taken | Mock gateway only. Known gap: if saving the order fails after approval, the charge is not reversed |
-| Login rate limit (SEC-007) | 5 failures per account and IP in 15 min | Per IP, [5 or 10] per 15 min | express-rate-limit default key |
+| Login rate limit (SEC-007) | 5 failures per account and IP in 15 min | Per IP, 10 login requests per 15 min | express-rate-limit default key |
 | Security logging (SEC-006) | Failed login, 401/403, invalid token logged | Implemented; LOGIN_FAILED and PASSWORD_CHANGE_FAILED events asserted in profile.test.js (securityLog is mocked, so the test checks the call, not console output) | 401/403 and invalid-token events are not asserted by any test |
 | Gateway outage | 504, retry with same key (tok_timeout) | 502 (tok_error); retry verified by ST-04 | Mock gateway design |
 | Admin stock and disable | PATCH /books/:id/stock (delta) and PATCH /books/:id/active | PATCH /books/:id with absolute stock_qty or is_active; DELETE /books/:id disables | Simpler admin API; covered by admin.test.js and gaps.test.js (ADM-03, 05, 07) |
@@ -88,3 +88,9 @@ The Test Plan exit criteria "100% of cases executed" and "100% of High-priority 
 ## Deployment
 The server Dockerfile builds locally (docker build succeeds). The application was not deployed to a cloud host or staging, and CI has no Docker build step. TC-PERF-01, TC-AVL-01, TC-SEC-06 (TLS) and TC-SEC-08 (ZAP) need a deployed environment, so they were not run.
 
+
+## Part 3: UI scope (no checkout or order screens)
+
+| Area | Submitted | Implemented | Reason |
+|---|---|---|---|
+| Checkout, order tracking and order history UI | Customer completes checkout and tracks orders in the web client | API only. The client has no checkout, order tracking or order history screens; the cart page shows "Checkout arrives in Sprint 2." | Sprint 2 effort went to the payment adapter, idempotent orders and tests. Demonstrated through system-tests.ps1 in docs/videos/sprint2-demo.mp4. ST-02 to ST-04 are therefore Partial (UI steps not exercised). |
