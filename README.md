@@ -87,3 +87,7 @@ and in the final report.
 06_PRESENTATION/             Final presentation
 client/  server/             Source code
 ```
+
+## Demo videos
+- Sprint 1: docs/videos/sprint1-demo.mp4
+- Sprint 2: docs/videos/sprint2-demo.mp4
