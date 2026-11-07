@@ -1,4 +1,4 @@
-﻿jest.mock('../../src/services/securityLog', () => ({ logSecurityEvent: jest.fn() }));
+jest.mock('../../src/services/securityLog', () => ({ logSecurityEvent: jest.fn() }));
 const { logSecurityEvent } = require('../../src/services/securityLog');
 const { app, request, makeUser, auth } = require('../helpers');
 
@@ -15,22 +15,27 @@ describe('US-24 / FR-016: profile and password', () => {
     expect(res.body.user.name).toBe('New Name');
   });
 
-  it('updates the email and lower-cases it', async () => {
-    const res = await request(app).put('/api/v1/auth/me').set(auth(token)).send({ email: 'NEW@Test.com' });
-    expect(res.status).toBe(200);
-    expect(res.body.user.email).toBe('new@test.com');
+  it('refuses to change the email (SRS FR-016) and leaves it unchanged', async () => {
+    const res = await request(app).put('/api/v1/auth/me').set(auth(token)).send({ email: 'other@test.com' });
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('FIELD_NOT_ALLOWED');
+    const me = await request(app).get('/api/v1/auth/me').set(auth(token));
+    expect(me.body.user.email).toBe('me@test.com');
   });
 
-  it('refuses an email already in use with 409', async () => {
-    await makeUser({ email: 'taken@test.com' });
-    const res = await request(app).put('/api/v1/auth/me').set(auth(token)).send({ email: 'taken@test.com' });
-    expect(res.status).toBe(409);
+  it('refuses to change the role', async () => {
+    const res = await request(app).put('/api/v1/auth/me').set(auth(token)).send({ role: 'admin' });
+    expect(res.status).toBe(400);
+    const me = await request(app).get('/api/v1/auth/me').set(auth(token));
+    expect(me.body.user.role).toBe('customer');
   });
 
-  it('refuses an invalid email with 400', async () => {
-    const res = await request(app).put('/api/v1/auth/me').set(auth(token)).send({ email: 'nope' });
+  it('refuses an empty name', async () => {
+    const res = await request(app).put('/api/v1/auth/me').set(auth(token)).send({ name: '   ' });
     expect(res.status).toBe(400);
   });
+
+
 
   it('requires authentication', async () => {
     expect((await request(app).put('/api/v1/auth/me').send({ name: 'X' })).status).toBe(401);
