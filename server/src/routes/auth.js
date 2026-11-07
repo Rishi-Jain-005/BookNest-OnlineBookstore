@@ -80,4 +80,56 @@ router.post(
 
 router.get('/me', requireAuth, (req, res) => res.json({ user: req.user }));
 
+/**
+ * US-24 / FR-016 — update own profile (name and/or email).
+ */
+router.put('/me', requireAuth, validateBody({ email: isEmail }), async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id || req.user.id);
+    const { name, email } = req.body;
+
+    if (name !== undefined) {
+      if (!String(name).trim()) return next(fail(400, 'VALIDATION_ERROR', 'Name cannot be empty'));
+      user.name = String(name).trim();
+    }
+    if (email !== undefined) {
+      const clean = String(email).toLowerCase().trim();
+      if (clean !== user.email && (await User.exists({ email: clean }))) {
+        return next(fail(409, 'EMAIL_TAKEN', 'An account with that email already exists'));
+      }
+      user.email = clean;
+    }
+    await user.save();
+    return res.json({ user });
+  } catch (e) {
+    return next(e);
+  }
+});
+
+/**
+ * US-24 / FR-016 — change password. The current password is required.
+ */
+router.put(
+  '/me/password',
+  requireAuth,
+  validateBody({
+    currentPassword: required('Current password'),
+    newPassword: compose(required('New password'), minLength('New password', 8))
+  }),
+  async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user._id || req.user.id);
+      if (!(await user.verifyPassword(req.body.currentPassword))) {
+        logSecurityEvent('PASSWORD_CHANGE_FAILED', { userId: String(user._id), ip: req.ip });
+        return next(fail(400, 'INVALID_PASSWORD', 'Current password is incorrect'));
+      }
+      user.password_hash = await User.hashPassword(req.body.newPassword);
+      await user.save();
+      return res.json({ message: 'Password updated' });
+    } catch (e) {
+      return next(e);
+    }
+  }
+);
+
 module.exports = router;
