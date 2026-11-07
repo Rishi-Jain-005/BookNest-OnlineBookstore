@@ -1,7 +1,7 @@
 # Branch Coverage Report
 
 **Project:** BookNest Online Bookstore  
-**Branch / commit:** `main` @ `b6086ab`  
+**Branch / commit:** `main` @ `d420f77`  
 **Run date:** 7 November 2026  
 **Tool:** Jest (`--runInBand --coverage`), MongoDB in Docker for integration tests
 

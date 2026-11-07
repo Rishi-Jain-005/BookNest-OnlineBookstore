@@ -1,7 +1,7 @@
 # System Validation Report
 
 **Project:** BookNest Online Bookstore  
-**Branch / commit:** `main` @ `b6086ab`  
+**Branch / commit:** `main` @ `d420f77`  
 **Run date:** 5 November 2026 (scripted system runs); 7 November 2026 (Jest)  
 **Tool:** Jest (`--runInBand --coverage`), MongoDB in Docker for integration tests
 
