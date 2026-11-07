@@ -81,24 +81,20 @@ router.post(
 router.get('/me', requireAuth, (req, res) => res.json({ user: req.user }));
 
 /**
- * US-24 / FR-016 — update own profile (name and/or email).
+ * US-24 / FR-016 — update own profile (name only; email and role cannot be changed).
  */
-router.put('/me', requireAuth, validateBody({ email: isEmail }), async (req, res, next) => {
+router.put('/me', requireAuth, async (req, res, next) => {
   try {
+    // FR-016: only the name can be changed here; email and role are fixed.
+    if (req.body.email !== undefined || req.body.role !== undefined) {
+      return next(fail(400, 'FIELD_NOT_ALLOWED', 'Email and role cannot be changed here'));
+    }
+    const name = req.body.name === undefined ? '' : String(req.body.name).trim();
+    if (!name || name.length > 100) {
+      return next(fail(400, 'VALIDATION_ERROR', 'Name is required (1-100 characters)'));
+    }
     const user = await User.findById(req.user._id || req.user.id);
-    const { name, email } = req.body;
-
-    if (name !== undefined) {
-      if (!String(name).trim()) return next(fail(400, 'VALIDATION_ERROR', 'Name cannot be empty'));
-      user.name = String(name).trim();
-    }
-    if (email !== undefined) {
-      const clean = String(email).toLowerCase().trim();
-      if (clean !== user.email && (await User.exists({ email: clean }))) {
-        return next(fail(409, 'EMAIL_TAKEN', 'An account with that email already exists'));
-      }
-      user.email = clean;
-    }
+    user.name = name;
     await user.save();
     return res.json({ user });
   } catch (e) {
