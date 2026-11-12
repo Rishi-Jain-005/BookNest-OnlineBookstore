@@ -74,17 +74,20 @@ The course guidelines name **Jenkins** as the CI tool. The Deliverables Part-2 b
 teams to "Enable Github Actions to automate the PRs, Commits etc", so this project uses
 **GitHub Actions**. The pipeline satisfies the same requirement — build and automated tests on
 every push and pull request, with published coverage — and this substitution is recorded here
-and in the final report.
+and in DEVIATIONS.md.
 
 ## Repository layout
 
 ```
 01_SYNOPSIS/                 Deliverable 1
-02_REQUIREMENTS/             SRS, Validation Spec v1, Project Plan
-03_DESIGN/                   Architecture, SW Design, Validation Spec v2
-04_IMPLEMENTATION_TESTING/   source, test cases, coverage, CI-CD evidence, Validation Spec v3
-05_FINAL_REPORT/             Final report, Validation report, Maintenance plan, screenshots
-06_PRESENTATION/             Final presentation
+02_REQUIREMENTS/             SRS v1.1 and the changes addendum (Changes_since_SRS_v1.1.md)
+BookNest_Team6_SRS_SAD_STP.pdf   SRS v1.1, SAD v1.0 and Test Plan v1.0 (submitted)
+DEVIATIONS.md                Differences from the submitted SRS, SAD and Test Plan
+docs/                        Test Case Document
+docs/reports/                Unit, System Validation, Code Coverage and Branch Coverage reports
+docs/system-tests/           system-tests.ps1 and its run output
+docs/evidence/               Secret scan and dependency audit evidence
+docs/videos/                 Sprint 1 and Sprint 2 demo videos
 client/  server/             Source code
 ```
 

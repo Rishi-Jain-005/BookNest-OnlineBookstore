@@ -36,3 +36,18 @@ describe('App', () => {
     expect(screen.queryByText(/^Cart/)).not.toBeInTheDocument();
   });
 });
+
+describe('Catalogue empty state (CAT-09)', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    global.fetch = mockFetch({
+      '/books': { data: [] },
+      '/books/genres': { data: [] }
+    });
+  });
+
+  it('shows the no-results message when the API returns no books', async () => {
+    render(<App />);
+    await waitFor(() => expect(screen.getByText(/no books match that search/i)).toBeInTheDocument());
+  });
+});
