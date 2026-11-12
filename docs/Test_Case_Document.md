@@ -1,6 +1,6 @@
 # BookNest – Test Case Document (updated after Sprints 1–3)
 
-**Team 6 · UE24CS341A · Based on STP v1.0 §13.3 · Execution: Jest run of 7 Nov 2026 (`server/jest-results.json`: 112 tests, 112 passed, 0 failed)**
+**Team 6 · UE24CS341A · Based on STP v1.0 §13.3 · Execution: Jest run of 12 Nov 2026, commit `7fe5afa` (`server/jest-results.json`: 128 tests, 128 passed, 0 failed; the 7 Nov run was 112 of 112)**
 
 **Result key:** **Pass** = executed and passed · **Partial** = executed, but some steps/data of the STP case were not exercised · **Not built (deferred)** = feature not implemented (see DEVIATIONS.md) · **Not executed** = no automated or manual evidence yet (not counted as Pass).
 
@@ -31,9 +31,9 @@
 | System (ST-01-08) | 8 | 0 | 3 | 2 | 3 |
 | **Total** | **99** | **50** | **20** | **19** | **10** |
 
-Code coverage (server, Jest): lines 92.36% (387/419), statements 90.25%, functions 90.47%, **branches 86.30% (189/219)**. Targets in STP §5: services lines ≥ 80%, branches ≥ 70% – met.
+Code coverage (server, Jest): lines 94.03% (394/419), statements 92.64%, functions 92.06%, **branches 89.49% (196/219)**. Targets in STP §5: services lines ≥ 80%, branches ≥ 70% – met.
 
-**Post-freeze additions (12 Nov 2026):** 16 server unit tests (`rateLimit`, `securityLog`, `securityLogService`, `db`; no database needed, run with `npm run test:unit`) and 1 client test (CAT-09 empty state). They move AUTH-08, AUTH-09, CAT-09 and SEC-07 to Pass and SEC-02 to Partial. The coverage figures and the 112-test count above are from the 7 Nov run and have not been recalculated; the new tests are included in the next CI run. Secret scan and dependency audit evidence: `docs/evidence/security-scan-evidence.md`.
+**Post-freeze additions (12 Nov 2026):** 16 server unit tests (`rateLimit`, `securityLog`, `securityLogService`, `db`; no database needed, run with `npm run test:unit`) and 1 client test (CAT-09 empty state). They move AUTH-08, AUTH-09, CAT-09 and SEC-07 to Pass and SEC-02 to Partial. The test count and coverage figures above are from the 12 Nov run (128 tests; the 7 Nov run had 112 tests, lines 92.36% and branches 86.30%) and match the four reports in `docs/reports`. Secret scan and dependency audit evidence: `docs/evidence/security-scan-evidence.md`.
 
 ## 2. Changes from STP v1.0 (test cases updated during the sprints)
 
@@ -150,7 +150,7 @@ Evidence = test name in `jest-results.json`. UT = unit, IT = integration.
 
 | TC | Result | Note |
 |---|---|---|
-| MNT-01 | Partial | coverage met (lines 92.36%, branches 86.30%); layering review/SonarQube gate not evidenced |
+| MNT-01 | Partial | coverage met (lines 94.03%, branches 89.49%); layering review/SonarQube gate not evidenced |
 | PERF-01, AVL-01, USE-01, SAF-01 | Not executed | need staging |
 | ST-02, ST-03, ST-04 | Partial | API-level run, 23/23 checks (st-run.txt); UI steps not exercised, no checkout screens |
 | ST-06, ST-08 | Not built (deferred) | FR-014 and FR-013 not implemented |

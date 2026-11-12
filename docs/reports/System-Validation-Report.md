@@ -1,11 +1,13 @@
 # System Validation Report
 
 **Project:** BookNest Online Bookstore  
-**Branch / commit:** `main` @ `3174f3e`  
-**Run date:** 5 November 2026 (scripted system runs); 7 November 2026 (Jest)  
+**Branch / commit:** `main` @ `7fe5afa`  
+**Run date:** 5 November 2026 (scripted system runs); 7 November 2026 and 12 November 2026 (Jest)  
 **Tool:** Jest (`--runInBand --coverage`), MongoDB in Docker for integration tests
 
 ## 1. Scope and method
+
+The integration results below are from the 7 Nov Jest run. The 12 Nov run (commit `7fe5afa`, CI run 43221279462 and a local run) repeated all 95 integration tests and 33 unit tests: 128 of 128 passed.
 
 System validation was done in two ways:
 1. **Automated integration tests** (95 tests in 8 suites, run against a real MongoDB through the Express app). Results are in section 3.
@@ -188,4 +190,4 @@ The Test Plan exit criterion asks for 100% of cases executed. That was not achie
 These are recorded as deviations in `DEVIATIONS.md`.
 
 ## 6. Conclusion
-All executed tests passed: 112/112 automated tests and 23/23 scripted system checks. The system validation is complete for the executed scope and incomplete against the full Test Plan, for the reasons in section 5.
+All executed tests passed: 128/128 automated tests and 23/23 scripted system checks. The system validation is complete for the executed scope and incomplete against the full Test Plan, for the reasons in section 5.
